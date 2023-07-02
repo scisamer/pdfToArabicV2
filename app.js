@@ -6,10 +6,10 @@ var fs = require("fs");
 const db = require('./db');
 
 // vars
-const admin = require('./admin');
-const base = require('./base');
-const security = require('./security');
-
+const admin = require('./bot/admin');
+const base = require('./bot/base');
+const security = require('./bot/security');
+const anlysis = require('./bot/anlysis');
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
@@ -22,6 +22,7 @@ bot.use(session());
 // نقطة امان
 bot.use( security );
 
+bot.use( anlysis );
 //ملفات الاضافات
 bot.use( admin );
 bot.use( base );
