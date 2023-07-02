@@ -11,6 +11,10 @@ const base = require('./bot/base');
 const security = require('./bot/security');
 const anlysis = require('./bot/anlysis');
 
+process.on('uncaughtException', function (err) {
+    console.log('Caught exception: ', err);
+});
+
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 bot.use(session());
