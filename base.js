@@ -123,7 +123,7 @@ ${span}<br><br>${botstyle}
 		ctx.session.isWorking = false;
 		console.log(html);
 		htmlpdf.create(html, { format: 'A4' }).toBuffer(function(err, buffer) {
-			if (err) return;
+			if (err) return sendFileAsHtml();
 
 			//fs.writeFileSync('demopdf.pdf', buffer)
 			console.log('done');
