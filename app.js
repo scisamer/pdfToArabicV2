@@ -15,7 +15,9 @@ process.on('uncaughtException', function (err) {
     console.log('Caught exception: ', err);
 });
 
-const bot = new Telegraf(process.env.BOT_TOKEN);
+// const bot = new Telegraf(process.env.BOT_TOKEN);
+const bot = new Telegraf('5506370053:AAH7gJOp9ylkq-KfY7R2srpXwbsfGRc2l0I');
+
 
 bot.use(session());
 
