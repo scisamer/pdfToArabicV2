@@ -17,7 +17,7 @@ async function base(ctx, next) {
 	if (text == "/help") return ctx.reply(`حساب الدعم والمساعدة: @snapdox`);
 	if (ctx.session.isWorking) return ctx.reply(`لم يترجم الملف: انتظر انتهاء العملية الجارية`);
 
-	if (text == "/start") return ctx.reply(`ارسل الملف بصيغة pdf`);
+	if (text == "/start") return ctx.reply(`ارسل الملف بصيغة PDF او قم بتحويل اي ملف الي`);
 
 	// ================================= اذا مو ملف =============================== //
 	if (!ctx.message.document) return ctx.reply(`لقد ارسلت رسالة نصية يجب عليك ارسال ملف (مستند) لترجمته`);
