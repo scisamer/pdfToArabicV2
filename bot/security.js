@@ -6,7 +6,7 @@ const db = require('../db');
 async function security(ctx, next) {
 	if (ctx.session == undefined) ctx.session = {};
 
-	//if ( !ctx.message ) return next();
+	if ( !ctx.message ) return next();
 	var uid = ctx.message.from.id;
 
 	var usr = await db.users.asyncFindOne({ id: uid });

@@ -1,22 +1,20 @@
-const { Context, session, Telegraf, Markup } = require('telegraf');
 const fs = require("fs");
 const db = require('../db');
 const request = require('request-promise');
 const { parse, HTMLElement  } = require('node-html-parser');
 
 const pdfparse = require('pdf-parse');
-var htmlpdf = require('html-pdf');
 const htmlToPdf = require("../adds/html-pdf");
 const translate = require('../adds/arApi2');
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 async function base(ctx, next) {
+	if (!ctx.message) return next();
 	var text = ctx.message.text;
 	var uid = ctx.message.from.id;
-	console.log(uid);
 
-
+	if (text == "/help") return ctx.reply(`حساب الدعم والمساعدة: @snapdox`);
 	if (ctx.session.isWorking) return ctx.reply(`لم يترجم الملف: انتظر انتهاء العملية الجارية`);
 
 	if (text == "/start") return ctx.reply(`ارسل الملف بصيغة pdf`);
@@ -65,10 +63,14 @@ async function base(ctx, next) {
 	// 	}
 	// 	pars.push(t.join(' '));
 	// }
+	var arabicPattern = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFBC2\uFBD3-\uFD3D\uFD50-\uFD8F\uFD92-\uFDC7\uFDF0-\uFDFC\uFE70-\uFE74\uFE76-\uFEFC]/g;
 	var pars = text.split(/[.!?]/);
 	 pars = pars.map(line => line.trim()).filter(line => line !== '');
 	console.log('pars done');
-	pars = pars.map(key => { return key.replace(/\n/g, ' ') });
+	pars = pars.map(key => {
+		return key.replace(/\n/g, ' ')
+				.replace(arabicPattern, "");
+	 });
 	var pars_ar = [];
 
 	// for (let o in pars) {
@@ -100,7 +102,6 @@ async function base(ctx, next) {
 	var en_spanM = root.querySelector("#en");
 	var ar_spanM = root.querySelector("#ar");
 	for (let o in pars) {
-		console.log(en_spanM);
 		let ar_div = ar_spanM.clone();
 		let en_div = en_spanM.clone();
 
@@ -139,9 +140,9 @@ async function base(ctx, next) {
 
 		// });
 
-			sendFileAsHtml();
+			// sendFileAsHtml();
 			console.log('done');
-			ctx.replyWithDocument({ source: pdfbuffer, filename: `${name}.pdf` });
+			await ctx.replyWithDocument({ source: pdfbuffer, filename: `${name}.pdf` });
 
 	} catch (e) {
 		sendFileAsHtml();

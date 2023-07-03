@@ -1,7 +1,10 @@
+
+try {
 const puppeteer = require('puppeteer');
 
 async function htmlToPdf (html) {
 
+  try {
     // Create a browser instance
     const browser = await puppeteer.launch();
 
@@ -20,13 +23,19 @@ async function htmlToPdf (html) {
     });
   // Downlaod the PDF
     const pdf = await page.pdf({
-      margin: { top: '100px', right: '30px', bottom: '100px', left: '30px' },
+      // margin: { top: '100px', right: '30px', bottom: '100px', left: '30px' },
       printBackground: true,
       format: 'A4',
     });
     // Close the browser instance
     await browser.close();
     return pdf;
+  } catch(e) {
+    return null;
+  }
   }
 
   module.exports = htmlToPdf;
+} catch(e) {
+  module.exports = {};
+}

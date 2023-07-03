@@ -16,7 +16,7 @@ process.on('uncaughtException', function (err) {
 });
 
 // const bot = new Telegraf(process.env.BOT_TOKEN);
-const bot = new Telegraf('5506370053:AAH7gJOp9ylkq-KfY7R2srpXwbsfGRc2l0I');
+const bot = new Telegraf('5506370053:AAGqrLNx6o3JMW1PwUJtBM5P1Sp4yKfNy3E');
 
 
 bot.use(session());
@@ -27,11 +27,12 @@ bot.use(session());
 
 // نقطة امان
 bot.use( security );
-
 bot.use( anlysis );
 //ملفات الاضافات
 bot.use( admin );
 bot.use( base );
+
+
 
 //================  Admin Conpnel ======================
 bot.launch();

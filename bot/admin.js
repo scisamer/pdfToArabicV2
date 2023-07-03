@@ -9,6 +9,7 @@ const db = require('../db');
 
 
 async function admin(ctx, next) {
+	if (!ctx.message) return next();
 	var text = ctx.message.text;
 	var uid = ctx.message.from.id;
 
