@@ -1,7 +1,7 @@
 const fs = require("fs");
 const db = require('../db');
 const request = require('request-promise');
-const { parse, HTMLElement  } = require('node-html-parser');
+const { parse, HTMLElement } = require('node-html-parser');
 
 const pdfparse = require('pdf-parse');
 const htmlToPdf = require("../adds/html-pdf");
@@ -34,7 +34,7 @@ async function base(ctx, next) {
 		.replace('.pdf', '_ar');
 
 	//================================ رسالة انتظار  ==========================================
-	ctx.reply(`يتم ترجمة الملف الآن، انتظر ...`);
+	const { message_id } = await ctx.reply(`يتم ترجمة الملف الآن، انتظر ...`);
 	ctx.session.isWorking = true;
 
 	//===================== احضار رابط الملف من خلال الايدي =================================
@@ -52,37 +52,16 @@ async function base(ctx, next) {
 		ctx.session.isWorking = false;
 		return ctx.reply(`لم يتم العثور على اي نص باللغة الانكيزية`);
 	}
-	// var words = text.split(/ +/);
-	// var pars = [];
-	// var limit = 27;
-	// for (let i = 0; i < words.length; i += limit) {
-	// 	let t = [];
-	// 	for (let o = 0; o < limit; o++) {
-	// 		if (words[o + i] === undefined) break;
-	// 		t.push(words[o + i]);
-	// 	}
-	// 	pars.push(t.join(' '));
-	// }
 	var arabicPattern = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFBC2\uFBD3-\uFD3D\uFD50-\uFD8F\uFD92-\uFDC7\uFDF0-\uFDFC\uFE70-\uFE74\uFE76-\uFEFC]/g;
 	var pars = text.split(/[.!?]/);
-	 pars = pars.map(line => line.trim()).filter(line => line !== '');
+	pars = pars.map(line => line.trim()).filter(line => line !== '');
 	console.log('pars done');
 	pars = pars.map(key => {
 		return key.replace(/\n/g, ' ')
-				.replace(arabicPattern, "");
-	 });
+			.replace(arabicPattern, "");
+	});
 	var pars_ar = [];
 
-	// for (let o in pars) {
-	// 	var en = pars[o];
-	// 	var t = await translate(en);
-	// 	if (t.error) t.ar = 'حدث خطأ في الترجمة!!';
-
-	// 	pars_ar.push(t.ar);
-	// 	//await delay(100);
-	// }
-
-	// ====================================
 	var t = await translate(pars);
 	if (t.error) {
 		for (let i in pars) {
@@ -93,7 +72,6 @@ async function base(ctx, next) {
 	pars_ar = pars_ar.map(key => { return key.replace(/\n/g, '<br>') });
 
 	console.log('pars_ar done');
-	//box-shadow: 1px 1px 9px 0px #888888;
 
 	// HTML
 	var html = fs.readFileSync("./accest/pdf.html", "UTF-8");
@@ -116,33 +94,23 @@ async function base(ctx, next) {
 	en_spanM.remove();
 	ar_spanM.remove();
 	html = root.toString();
+	try {
 
-
-	//console.log(pages[0]);
+		ctx.telegram.editMessageText(ctx.chat.id, message_id, 0, 'تم الانتهاء من ترجمة الملف بنجاح');
+	} catch (e) {
+		ctx.telegram.reply('تم الانتهاء من ترجمة الملف بنجاح');
+	}
 
 
 	const sendFileAsHtml = () => {
-		//console.log('done html');
 		var htmlbuffer = Buffer.from(html, "utf8");
 		ctx.replyWithDocument({ source: htmlbuffer, filename: `${name}.html` });
 	}
 	try {
 		ctx.session.isWorking = false;
-		// console.log(html);
 		var pdfbuffer = await htmlToPdf(html);
-		// htmlpdf.create(html, { format: 'A4' }).toBuffer(function(err, buffer) {
-		// 	if (err) return sendFileAsHtml();
-
-		// 	//fs.writeFileSync('demopdf.pdf', buffer)
-		// 	sendFileAsHtml();
-		// 	console.log('done');
-		// 	ctx.replyWithDocument({ source: buffer, filename: `${name}.pdf` });
-
-		// });
-
-			// sendFileAsHtml();
-			console.log('done');
-			await ctx.replyWithDocument({ source: pdfbuffer, filename: `${name}.pdf` });
+		console.log('done');
+		await ctx.replyWithDocument({ source: pdfbuffer, filename: `${name}.pdf` });
 
 	} catch (e) {
 		sendFileAsHtml();
